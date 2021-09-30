@@ -4,6 +4,7 @@
 # https://github.com/YadominJinta/atilo has info about the project.
 # https://github.com/YadominJinta/atilo/blob/master/CONTRIBUTORS.md Thank you for help.
 
+import argparse
 import os
 import tarfile
 import requests
@@ -12,7 +13,8 @@ import hashlib
 import io
 import sys
 from tqdm import tqdm
-from prettytable import PrettyTable 
+from prettytable import PrettyTable
+import gettext
 
 
 home = os.getenv('HOME')
@@ -21,6 +23,46 @@ atilo_tmp  = atilo_home + 'tmp/'
 atilo_config = atilo_home + 'local.json'
 atilo_version = "2.1.0"
 
+#lang1 = gettext.translation('lang', localedir='locale', languages=['en'])
+#lang2 = gettext.translation('lang', localedir='locale', languages=['zh_CN'])
+#lang3 = gettext.translation('lang', localedir='locale', languages=['zh_TW'])
+_ = gettext.gettext
+# start by using language1
+#lang1.install()
+
+# ... time goes by, user selects zh_CN
+#lang2.install()
+
+# ... more time goes by, user selects zh_TW
+#lang3.install()
+
+def _init_argparse():
+    parent_parser = argparse.ArgumentParser(description=_('Atilo\t\t {} is a program to help you install some GNU/Linux distributions on Termux.'.format(atilo_version)))
+    parent_parser.add_argument('-v', '--version',action='version',version='%(prog)s {}'.format(atilo_version),)
+    subparsers = parent_parser.add_subparsers(title="Commands")
+    parser_images = subparsers.add_parser("images", parents=[parent_parser],
+                                          add_help=False,
+                                          help="list available images")
+    parser_images.set_defaults(func=show_list)
+    parser_remove = subparsers.add_parser("remove", parents=[parent_parser],
+                                          add_help=False,
+                                          help="remove installed images")
+    parser_remove.set_defaults(func=show_list)
+    args = parent_parser.parse_args()
+
+        
+def show_help():
+    print('Atilo\t\t' + atilo_version )
+    print('Usage: atilo [Command] [Argument]\n')
+    print('Atilo is a program to help you install some GNU/Linux distributions on Termux.\n')
+    print('Commands:')
+    print('images\t\t list available images')
+    print('remove\t\t remove installed images')
+    print('pull\t\t pulling an image')
+    print('run\t\t run an image')
+    print('clean\t\t clean tmps')
+    print('help\t\t show this help.\n')
+    
 def check_dir():
     if not os.path.isdir(atilo_home):
         os.mkdir(atilo_home)
@@ -304,20 +346,10 @@ def run_image(arg):
     else:
         os.system(command)
 
-def show_help():
-    print('Atilo\t\t' + atilo_version )
-    print('Usage: atilo [Command] [Argument]\n')
-    print('Atilo is a program to help you install some GNU/Linux distributions on Termux.\n')
-    print('Commands:')
-    print('images\t\t list available images')
-    print('remove\t\t remove installed images')
-    print('pull\t\t pulling an image')
-    print('run\t\t run an image')
-    print('clean\t\t clean tmps')
-    print('help\t\t show this help.\n')
+if __name__ == "__main__":
     
 
-if __name__ == "__main__":
+    _init_argparse()
     check_dir()
     
     if len(sys.argv) == 1:
