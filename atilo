@@ -21,6 +21,19 @@ atilo_tmp  = atilo_home + 'tmp/'
 atilo_config = atilo_home + 'local.json'
 atilo_version = "2.1.0"
 
+lang1 = gettext.translation('lang', localedir='locale', languages=['en'])
+lang2 = gettext.translation('lang', localedir='locale', languages=['zh_CN'])
+lang3 = gettext.translation('lang', localedir='locale', languages=['zh_TW'])
+_ = gettext.gettext
+# start by using language1
+lang1.install()
+
+# ... time goes by, user selects zh_CN
+lang2.install()
+
+# ... more time goes by, user selects zh_TW
+lang3.install()
+
 def check_dir():
     if not os.path.isdir(atilo_home):
         os.mkdir(atilo_home)
